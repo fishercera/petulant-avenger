@@ -1,0 +1,100 @@
+"Mapping"	"Reference Position"	"Consensus Position"	"Variation Type"	"Length"	"Reference"	"Variants"	"Allele Variations"	"Frequencies"	"Counts"	"Coverage"	"Variant #1"	"Frequency of #1"	"Count of #1"	"Variant #2"	"Frequency of #2"	"Count of #2"
+SL9_pseudoscaffold_1	3235	3236	SNP	1	C	1	G	83.8	31	37	G	83.784	31					
+SL9_pseudoscaffold_1	7215	7216	SNP	1	T	1	A	100	17	17	A	100	17					
+SL9_pseudoscaffold_1	7243	7244	SNP	1	G	1	T	100	10	10	T	100	10					
+SL9_pseudoscaffold_1	7431	7332	SNP	1	G	2	A/G	51.0/49.0	52/50	102	A	50.98	52	G	49.02	50		
+SL9_pseudoscaffold_1	7487	7388	SNP	1	C	2	A/C	60.0/40.0	27/18	45	A	60	27	C	40	18		
+SL9_pseudoscaffold_1	8634	8434	SNP	1	T	1	C	60	789	1315	C	60	789					
+SL9_pseudoscaffold_1	8655	8455	SNP	1	T	1	G	76	834	1098	G	75.956	834					
+SL9_pseudoscaffold_1	8667	8467	SNP	1	C	1	T	78.1	350	448	T	78.125	350					
+SL9_pseudoscaffold_1	8672	8472	SNP	1	T	1	A	73.2	199	272	A	73.162	199					
+SL9_pseudoscaffold_1	11331	10931	SNP	1	C	2	C/T	52.4/47.6	22/20	42	C	52.381	22	T	47.619	20		
+SL9_pseudoscaffold_1	14197	13797	SNP	1	G	2	G/A	55.9/44.1	19/15	34	G	55.882	19	A	44.118	15		
+SL9_pseudoscaffold_1	15559	15059	SNP	1	T	1	A	83.9	26	31	A	83.871	26					
+SL9_pseudoscaffold_1	16238	15738	SNP	1	A	1	C	79.5	31	39	C	79.487	31					
+SL9_pseudoscaffold_1	18749	18249	SNP	1	G	1	A	81	34	42	A	80.952	34					
+SL9_pseudoscaffold_1	19475	18875	SNP	1	A	1	G	100	18	18	G	100	18					
+SL9_pseudoscaffold_1	21714	21114	SNP	1	G	1	T	82.8	24	29	T	82.759	24					
+SL9_pseudoscaffold_1	21872	21172	SNP	1	T	1	G	100	14	14	G	100	14					
+SL9_pseudoscaffold_1	23209	22509	SNP	1	C	1	T	87.8	36	41	T	87.805	36					
+SL9_pseudoscaffold_1	26062	25261	SNP	1	G	1	A	100	42	42	A	100	42					
+SL9_pseudoscaffold_1	26095	25294	SNP	1	G	1	T	100	90	90	T	100	90					
+SL9_pseudoscaffold_1	26096	25295	SNP	1	C	1	T	100	91	91	T	100	91					
+SL9_pseudoscaffold_1	26115	25314	SNP	1	T	1	C	72.6	82	113	C	72.566	82					
+SL9_pseudoscaffold_1	26140	25339	SNP	1	G	2	A/G	57.9/42.1	73/53	126	A	57.937	73	G	42.063	53		
+SL9_pseudoscaffold_1	26234	25435	SNP	1	A	1	G	71.2	42	59	G	71.186	42					
+SL9_pseudoscaffold_1	26327	25528	SNP	1	A	1	T	100	44	44	T	100	44					
+SL9_pseudoscaffold_1	26338	25539	SNP	1	C	1	T	100	49	49	T	100	49					
+SL9_pseudoscaffold_1	26377	25578	SNP	1	T	1	A	100	47	47	A	100	47					
+SL9_pseudoscaffold_1	26459	25660	SNP	1	G	1	A	100	60	60	A	100	60					
+SL9_pseudoscaffold_1	26651	25852	SNP	1	A	2	A/C	54.8/45.2	69/57	126	A	54.762	69	C	45.238	57		
+SL9_pseudoscaffold_1	26739	25941	SNP	1	C	2	C/A	59.4/40.6	82/56	138	C	59.42	82	A	40.58	56		
+SL9_pseudoscaffold_1	32045	31247	SNP	1	G	1	A	85.1	40	47	A	85.106	40					
+SL9_pseudoscaffold_1	47677	46579	SNP	1	A	1	C	74.5	41	55	C	74.545	41					
+SL9_pseudoscaffold_1	48369	47160	SNP	1	C	1	A	76.5	52	68	A	76.471	52					
+SL9_pseudoscaffold_1	48376	47167	SNP	1	T	1	G	65.1	54	83	G	65.06	54					
+SL9_pseudoscaffold_1	48399	47190	SNP	1	G	2	A/G	61.0/39.0	61/39	100	A	61	61	G	39	39		
+SL9_pseudoscaffold_1	48417	47208	SNP	1	C	2	T/C	63.8/36.2	60/34	94	T	63.83	60	C	36.17	34		
+SL9_pseudoscaffold_1	48421	47212	SNP	1	A	2	G/A	58.9/41.1	56/39	95	G	58.947	56	A	41.053	39		
+SL9_pseudoscaffold_1	48443	47234	SNP	1	T	2	T/C	59.6/40.4	56/38	94	T	59.574	56	C	40.426	38		
+SL9_pseudoscaffold_1	48445	47236	SNP	1	C	2	C/T	61.1/38.9	55/35	90	C	61.111	55	T	38.889	35		
+SL9_pseudoscaffold_1	48448	47239	SNP	1	G	2	G/C	63.3/36.7	57/33	90	G	63.333	57	C	36.667	33		
+SL9_pseudoscaffold_1	48906	47697	SNP	1	G	2	G/A	63.6/36.4	63/36	99	G	63.636	63	A	36.364	36		
+SL9_pseudoscaffold_1	48929	47720	SNP	1	G	2	G/A	64.5/35.5	69/38	107	G	64.486	69	A	35.514	38		
+SL9_pseudoscaffold_1	48946	47737	SNP	1	A	2	A/G	61.9/38.1	60/37	97	A	61.856	60	G	38.144	37		
+SL9_pseudoscaffold_1	51712	50403	SNP	1	A	1	G	100	14	14	G	100	14					
+SL9_pseudoscaffold_1	51713	50404	SNP	1	C	1	G	100	14	14	G	100	14					
+SL9_pseudoscaffold_1	51829	50520	SNP	1	G	1	C	100	42	42	C	100	42					
+SL9_pseudoscaffold_1	51844	50535	SNP	1	T	1	G	100	40	40	G	100	40					
+SL9_pseudoscaffold_1	51846	50537	SNP	1	A	1	C	100	42	42	C	100	42					
+SL9_pseudoscaffold_1	52158	50850	SNP	1	A	2	A/C	63.6/36.4	68/39	107	A	63.551	68	C	36.449	39		
+SL9_pseudoscaffold_1	52162	50854	SNP	1	C	2	C/T	61.1/38.9	69/44	113	C	61.062	69	T	38.938	44		
+SL9_pseudoscaffold_1	59939	58428	SNP	1	A	2	A/G	59.4/40.6	41/28	69	A	59.42	41	G	40.58	28		
+SL9_pseudoscaffold_1	59957	58446	SNP	1	A	2	A/G	55.9/44.1	52/41	93	A	55.914	52	G	44.086	41		
+SL9_pseudoscaffold_1	60070	58559	SNP	1	T	2	T/C	63.9/36.1	39/22	61	T	63.934	39	C	36.066	22		
+SL9_pseudoscaffold_1	60079	58568	SNP	1	C	2	T/C	58.9/41.1	33/23	56	T	58.929	33	C	41.071	23		
+SL9_pseudoscaffold_1	60092	58581	SNP	1	T	2	C/T	54.9/45.1	28/23	51	C	54.902	28	T	45.098	23		
+SL9_pseudoscaffold_1	60332	58721	SNP	1	T	1	C	65.2	45	69	C	65.217	45					
+SL9_pseudoscaffold_1	60385	58774	SNP	1	A	2	A/C	63.5/36.5	66/38	104	A	63.462	66	C	36.538	38		
+SL9_pseudoscaffold_1	60414	58803	SNP	1	T	2	T/A	61.8/38.2	68/42	110	T	61.818	68	A	38.182	42		
+SL9_pseudoscaffold_1	60442	58828	SNP	1	C	2	C/A	62.5/37.5	65/39	104	C	62.5	65	A	37.5	39		
+SL9_pseudoscaffold_1	60457	58843	SNP	1	C	2	C/G	61.8/38.2	63/39	102	C	61.765	63	G	38.235	39		
+SL9_pseudoscaffold_1	60559	58945	SNP	1	G	2	G/A	52.6/47.4	51/46	97	G	52.577	51	A	47.423	46		
+SL9_pseudoscaffold_1	60570	58956	SNP	1	T	2	T/A	50.5/49.5	47/46	93	T	50.538	47	A	49.462	46		
+SL9_pseudoscaffold_1	60584	58970	SNP	1	C	2	T/C	58.8/41.2	47/33	80	T	58.75	47	C	41.25	33		
+SL9_pseudoscaffold_1	62798	60985	SNP	1	A	1	C	82.5	33	40	C	82.5	33					
+SL9_pseudoscaffold_1	63775	61962	SNP	1	T	1	C	80	56	70	C	80	56					
+SL9_pseudoscaffold_1	65341	63428	SNP	1	C	1	G	69	29	42	G	69.048	29					
+SL9_pseudoscaffold_1	65658	63645	SNP	1	A	1	G	89.8	239	266	G	89.85	239					
+SL9_pseudoscaffold_1	65667	63654	SNP	1	T	1	A	86.5	231	267	A	86.517	231					
+SL9_pseudoscaffold_1	70665	68352	SNP	1	A	1	G	77.5	31	40	G	77.5	31					
+SL9_pseudoscaffold_1	71754	69441	SNP	1	A	1	G	90	27	30	G	90	27					
+SL9_pseudoscaffold_1	72008	69695	SNP	1	C	1	A	86.2	25	29	A	86.207	25					
+SL9_pseudoscaffold_1	72236	69923	SNP	1	G	1	A	80.6	29	36	A	80.556	29					
+SL9_pseudoscaffold_1	72951	70537	SNP	1	A	1	T	100	14	14	T	100	14					
+SL9_pseudoscaffold_1	73394	70980	SNP	1	T	1	A	73.8	31	42	A	73.81	31					
+SL9_pseudoscaffold_1	76953	74539	SNP	1	A	1	C	80.4	41	51	C	80.392	41					
+SL9_pseudoscaffold_1	77475	74961	SNP	1	G	1	A	100	21	21	A	100	21					
+SL9_pseudoscaffold_1	78932	76418	SNP	1	G	1	C	80.4	41	51	C	80.392	41					
+SL9_pseudoscaffold_1	79273	76759	SNP	1	A	1	T	100	21	21	T	100	21					
+SL9_pseudoscaffold_1	79494	76879	SNP	1	A	2	A/G	63.4/36.6	71/41	112	A	63.393	71	G	36.607	41		
+SL9_pseudoscaffold_1	84417	81503	SNP	1	A	1	G	74.2	46	62	G	74.194	46					
+SL9_pseudoscaffold_1	84421	81507	SNP	1	A	1	G	73.4	47	64	G	73.438	47					
+SL9_pseudoscaffold_1	84473	81559	SNP	1	A	2	A/G	60.7/39.3	54/35	89	A	60.674	54	G	39.326	35		
+SL9_pseudoscaffold_1	84477	81563	SNP	1	C	2	T/C	55.8/44.2	48/38	86	T	55.814	48	C	44.186	38		
+SL9_pseudoscaffold_1	84482	81568	SNP	1	A	2	T/A	52.3/47.7	45/41	86	T	52.326	45	A	47.674	41		
+SL9_pseudoscaffold_1	84489	81575	SNP	1	C	2	T/C	51.1/48.9	46/44	90	T	51.111	46	C	48.889	44		
+SL9_pseudoscaffold_1	84498	81584	SNP	1	T	2	T/A	51.1/48.9	48/46	94	T	51.064	48	A	48.936	46		
+SL9_pseudoscaffold_1	84507	81593	SNP	1	A	2	A/G	51.6/48.4	49/46	95	A	51.579	49	G	48.421	46		
+SL9_pseudoscaffold_1	84516	81602	SNP	1	C	2	C/A	50.5/49.5	48/47	95	C	50.526	48	A	49.474	47		
+SL9_pseudoscaffold_1	84702	81788	SNP	1	T	2	T/A	54.8/45.2	51/42	93	T	54.839	51	A	45.161	42		
+SL9_pseudoscaffold_1	84735	81821	SNP	1	C	2	T/C	51.5/48.5	52/49	101	T	51.485	52	C	48.515	49		
+SL9_pseudoscaffold_1	84790	81876	SNP	1	T	2	T/A	59.4/40.6	38/26	64	T	59.375	38	A	40.625	26		
+SL9_pseudoscaffold_1	85434	82520	SNP	1	C	2	C/T	55.1/44.9	27/22	49	C	55.102	27	T	44.898	22		
+SL9_pseudoscaffold_1	89834	86720	SNP	1	A	1	G	84.4	27	32	G	84.375	27					
+SL9_pseudoscaffold_1	91305	88091	SNP	1	T	1	G	86	49	57	G	85.965	49					
+SL9_pseudoscaffold_1	93108	89894	SNP	1	G	1	C	79.6	43	54	C	79.63	43					
+SL9_pseudoscaffold_1	93483	90269	SNP	1	C	2	T/C	58.8/41.2	20/14	34	T	58.824	20	C	41.176	14		
+SL9_pseudoscaffold_1	94385	91171	SNP	1	T	1	A	100	24	24	A	100	24					
+SL9_pseudoscaffold_1	95117	91803	SNP	1	T	1	G	73.5	36	49	G	73.469	36					
+SL9_pseudoscaffold_1	97426	94112	SNP	1	A	1	T	79.5	35	44	T	79.545	35					
