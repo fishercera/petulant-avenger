@@ -1,0 +1,7 @@
+submitting a slurm job:
+srun -p bigmem -n 8 
+
+usearch -ublast -strand both -db <database> -evalue 1e9 -weak_evalue 0.01 -maxaccepts 10 -top_hits_only -blast6out results.out -threads 24
+
+
+usearch -findorfs reads.fasta -output orfs.fasta -xlat -orfstyle 7 -mincodons 16 
