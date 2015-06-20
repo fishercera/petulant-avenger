@@ -51,12 +51,23 @@ wheretrim = $2
 
 echo "Performing paired end quality trimming on $lib.P1.step2.fastq.gz and $lib.P2.step2.fastq.gz" 
 
-java -jar $wheretrim/trimmomatic.jar PE -phred33 -trimlog $lib.trimlog $lib.P1.step2.fastq.gz $lib.P2.step2.fastq.gz output/$lib.P1.step3.fastq.gz output/$lib.U1.step3.fastq.gz output/$lib.P2.step3.fastq.gz output/$lib.U2.step3.fastq.gz ILLUMINACLIP:adapters1.fasta:2:25:10:1:true LEADING:10 TRAILING:10 SLIDINGWINDOW:4:20 CROP:222 MINLEN:75 > $lib.step3.log
+java -jar $wheretrim/trimmomatic.jar PE -phred33 -trimlog $lib.trimlog $lib.P1.step2.fastq.gz $lib.P2.step2.fastq.gz output/$lib.P1.step3.fastq.gz output/$lib.U1.step3.fastq.gz output/$lib.P2.step3.fastq.gz output/$lib.U2.step3.fastq.gz ILLUMINACLIP:adapters1.fasta:2:25:10:1:true LEADING:10 TRAILING:10 SLIDINGWINDOW:4:20 CROP:222 MINLEN:75 >  $lib.step3.log
 
 }
 
-# qualtrimSE We have some unpaired files from the step2 that we need to take care of separately. 
-# USAGE: qualtrimSE <lib-base-name> <path-to-trimmomatic>
-# function qualtrimSE {
 
+# qualtrimSE We have some unpaired files from the step2 that we need to take care of separately. 
+# USAGE: qualtrimSE <lib.U1/2> <path-to-trimmomatic>
+# function qualtrimSE {
+# lib = $1
+# wheretrim = $2
+# java -jar $wheretrim/trimmomatic.jar SE -phred33 -trimlog $lib.trimlog $lib.step2.fastq.gz $lib.step3a.fastq.gz ILLUMINACLIP:adapters1.fasta:2:25:10:1:true LEADING:10 TRAILING:10 SLIDINGWINDOW:4:20 CROP:222 MINLEN:75
 # }
+function qualtrimSE {
+  lib = $1
+  wheretrim = $2
+  
+  echo "Single end quality trim on $lib.step2.fastq.gz"
+  
+  java -jar $wheretrim/trimmomatic.jar SE -phred33 -trimlog $lib.trimlog $lib.step2.fastq.gz $lib.step3a.fastq.gz ILLUMINACLIP:adapters1.fasta:2:25:10:1:true LEADING:10 TRAILING:10 SLIDINGWINDOW:4:20 CROP:222 MINLEN:75 > $lib.step3a.log
+}
