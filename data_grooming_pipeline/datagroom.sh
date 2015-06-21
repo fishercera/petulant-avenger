@@ -51,6 +51,8 @@ function cropR1 {
   echo $wheretrim
   
   java -jar $wheretrim/trimmomatic.jar SE -phred33 -trimlog headcrop.trimlog $lib.R1.fastq.gz $lib.R1crped.fastq.gz HEADCROP:5 > $lib.crp.log
+  cp $lib.R1.fastq.gz $lib.R1.fastq.gz_ORIG
+  mv $lib.R1crped.fastq.gz $lib.R1.fastq.gz
 }
 
 	  # Drop the very short reads that (in clontech libs) are all NNN
@@ -59,9 +61,9 @@ function dropTiny {
   lib=$1
   wheretrim=$2 
   
-  echo "Dropping tiny reads of $lib.R1crped.fastq.gz and $lib.R2.fastq.gz"
+  echo "Dropping tiny reads of $lib.R1.fastq.gz and $lib.R2.fastq.gz"
   
-  java -jar $wheretrim/trimmomatic.jar PE -phred33 -trimlog $lib.trimlog $lib.R1crped.fastq.gz $lib.R2.fastq.gz scratch/$lib.P1.step2.fastq.gz scratch/$lib.U1.step2.fastq.gz scratch/$lib.P2.step2.fastq.gz scratch/$lib.U2.step2.fastq.gz MINLEN:36 > $lib.step2.log
+  java -jar $wheretrim/trimmomatic.jar PE -phred33 -trimlog $lib.trimlog $lib.R1.fastq.gz $lib.R2.fastq.gz scratch/$lib.P1.step2.fastq.gz scratch/$lib.U1.step2.fastq.gz scratch/$lib.P2.step2.fastq.gz scratch/$lib.U2.step2.fastq.gz MINLEN:36 > $lib.step2.log
 }
 
 
@@ -87,7 +89,7 @@ function qualtrimSE {
   
   echo "Single end quality trim on $lib.step2.fastq.gz"
   
-  java -jar $wheretrim/trimmomatic.jar SE -phred33 -trimlog $lib.trimlog scratch/$lib.step2.fastq.gz scratch/$lib.step3a.fastq.gz ILLUMINACLIP:$wheretrim/adapters/adapters1.fasta:2:25:10:1:true LEADING:10 TRAILING:10 SLIDINGWINDOW:4:20 CROP:222 MINLEN:75 > $lib.step3a.log
+  java -jar $wheretrim/trimmomatic.jar SE -phred33 -trimlog $lib.trimlog scratch/$lib.step2.fastq.gz scratch/$lib.step3a.fastq.gz LEADING:10 TRAILING:10 SLIDINGWINDOW:4:20 CROP:222 MINLEN:75 > $lib.step3a.log
   cat $lib.step3a.log
 }
 
@@ -128,7 +130,7 @@ function sp {
 
 echo "fastqcB4 $library - WORKS"
 
-fastqcB4 "$library"
+ fastqcB4 "$library"
 
 echo "Changed working directory"
 cd "input/"
@@ -137,23 +139,23 @@ pwd
 echo "crop1 $library - WORKS"
 cropR1 "$library" "/home/cera/apps/trimmomatic"
 
-echo "dropTiny - WORKS"
+ echo "dropTiny - WORKS"
 dropTiny "$library" "/home/cera/apps/trimmomatic"
 
-echo "qualtrimPE - WORKS"
-qualtrimPE "$library" "/home/cera/apps/trimmomatic"
+ echo "qualtrimPE - WORKS"
+ qualtrimPE "$library" "/home/cera/apps/trimmomatic"
 
 #  USAGE: qualtrimSE <lib.U1/2> <path-to-trimmomatic>
-echo "qualtrimSE - WORKS"
-qualtrimSE "$library.U1" "/home/cera/apps/trimmomatic"
-qualtrimSE "$library.U2" "/home/cera/apps/trimmomatic"
+ echo "qualtrimSE - WORKS"
+qualtrimSE "$library.U1" "/home/cera/apps/trimmomatic" 
+qualtrimSE "$library.U2" "/home/cera/apps/trimmomatic" 
 
 gunzip scratch/$library.U1.step3*
 gunzip scratch/$library.U2.step3*
 
- cat scratch/$library.U1.step3* > scratch/$library.U1.step3b.fastq
+cat scratch/$library.U1.step3* > scratch/$library.U1.step3b.fastq
  rm -f scratch/$library.U1.step3.fastq
- rm -f scratch/$library.U1.step3a.fastq
+rm -f scratch/$library.U1.step3a.fastq
  
  mv scratch/$library.U1.step3b.fastq scratch/$library.U1.step3.fastq
 
@@ -163,37 +165,39 @@ gunzip scratch/$library.U2.step3*
  
  mv scratch/$library.U2.step3b.fastq scratch/$library.U2.step3.fastq
 
+
  gzip scratch/$library.U*step3*
  rm -f scratch/$library.*step2*
 
  echo "Post trimmomatic cleanup done. Time to run bowtie2."
+echo "Everything works up to this point!" 
 
-cd ../
-pwd
-
-gunzip input/scratch/*fastq.gz
-filterContamsPE "$library" "Greg_rRNA" "bt2"
-echo "filterContamsPE works"
-filterContamsSE "$library.U1" "Greg_rRNA" "bt2"
-echo "filterContamsSE WORKS"
-filterContamsSE "$library.U2" "Greg_rRNA" "bt2"
-
-echo "SeqPrep function WORKS"
-sp "$library"
-
-gzip input/scratch/$library.U*.fastq
-mv input/scratch/$library.U*.filtered.fastq.gz output/
-
-# TODO test to see if there's a fastqcAFTER directory, if not make it
-
-fastqcAFTER "$library"
-
-rm -rf input/scratch/
-rm -rf input/*log
-
-gunzip output/*.fastq.gz
-echo "Cleaning up read files"
-cat output/$library.P1.SP.fastq output/$library.U1.filtered.fastq output/$library.merged.SP.fastq > output/$library.left.fastq
-cat output/$library.P2.SP.fastq output/$library.U2.filtered.fastq > output/$library.right.fastq
-
-gzip output/$library.left.fastq output/$library.right.fastq
+# # cd ../
+# pwd
+# 
+# gunzip input/scratch/*fastq.gz
+# # filterContamsPE "$library" "Greg_rRNA" "bt2"
+# echo "filterContamsPE works"
+# # filterContamsSE "$library.U1" "Greg_rRNA" "bt2"
+# echo "filterContamsSE WORKS"
+# # filterContamsSE "$library.U2" "Greg_rRNA" "bt2"
+# 
+# echo "SeqPrep function WORKS"
+# # sp "$library"
+# 
+# # gzip input/scratch/$library.U*.fastq
+# # mv input/scratch/$library.U*.filtered.fastq.gz output/
+# 
+# # TODO test to see if there's a fastqcAFTER directory, if not make it
+# 
+# # fastqcAFTER "$library"
+# 
+# echo "rm -rf input/scratch/"
+# echo "rm -rf input/*log"
+# 
+# # gunzip output/*.fastq.gz
+# echo "Cleaning up read files"
+# echo "cat output/$library.P1.SP.fastq output/$library.U1.filtered.fastq output/$library.merged.SP.fastq > output/$library.left.fastq"
+# echo "cat output/$library.P2.SP.fastq output/$library.U2.filtered.fastq > output/$library.right.fastq"
+# 
+# # gzip output/$library.left.fastq output/$library.right.fastq
