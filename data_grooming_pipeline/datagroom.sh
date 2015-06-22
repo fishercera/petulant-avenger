@@ -118,10 +118,11 @@ function fastqcAFTER {
   #USAGE: sp <lib-base-name>
 function sp {
   lib=$1
-  
+  A=$2 # Adapter 1 - forward! for CLontech reads: GTGTAGATCTCGGTGGTCGC
+  B=$3 # Adapter 2 - reverse complement! For Clontech reads: GTGTAGATCTCGGTGGTCGC
   echo "Performing SeqPrep on $lib.P1.filtered.fastq and $lib.P2.filtered.fastq"
   
-  SeqPrep -f input/scratch/$lib.P1.filtered.fastq -r input/scratch/$lib.P2.filtered.fastq -1 output/$lib.P1.SP.fastq.gz -2 output/$lib.P2.SP.fastq.gz -s output/$lib.merged.SP.fastq.gz -g -E output/$lib.alignments.fasta    
+  SeqPrep -f input/scratch/$lib.P1.filtered.fastq -r input/scratch/$lib.P2.filtered.fastq -1 output/$lib.P1.SP.fastq.gz -2 output/$lib.P2.SP.fastq.gz -s output/$lib.merged.SP.fastq.gz -A $A -B $B -E output/$lib.alignments.fasta    
   
 }
 

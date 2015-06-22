@@ -15,17 +15,22 @@
 
 
 function filterContamsPE {
-pass=$1
-index=$2
-indexPath=$3
-libbase=$4
+lib=$1 # The library base, ie ELJ1393
+index=$2 # The index base, ie Greg_rRNA
+indexPath=$3 # The path to the index, ie ~/mini/bt2
 
-echo "Starting bowtie2 with parameters $pass, $index, $indexPath, $libbase"
+echo "Starting bowtie2 with parameters $lib, $index, $indexPath"
 
-echo "bowtie2 -q --phred33 --mm --very-fast -k 1 -I 250 -X 1000 --dovetail --met-file bowtie2Metrics-$index.out --un $libbase$index.Unpaired.filtered.fastq --al $libbase$index.Unpaired.contams.fastq --un-conc $libbase$index.P%.filtered.fastq --al-conc $libbase$index.P%.contams.fastq -x $indexPath/$index -1 $pass.P1.filtered.fastq -2 $pass.P2.filtered.fastq -S $pass.paired.$index.sam "
-echo "### The outputs become the inputs: "
-echo "### $libbase$index.Unpaired.filtered.fastq and "
-echo "### $libbase$index.P%.filtered.fastq ###"
+echo "bowtie2 -q --phred33 --mm --no-mixed --very-fast -k 1 -I 250 -X 1000 --dovetail --met-file bowtie2Metrics-$index.out --un-conc \
+      input/scratch/$lib$index.P%.filtered.fastq --al-conc input/scratch/$lib$index.P%.contams.fastq -x $indexPath/$index -1 \
+      input/$lib.R1.fastq -2 input/$lib.R2.fastq -S $lib.paired.$index.sam "
+echo "mv input/$lib.R1.fastq input/scratch/$lib.R1.fastq_pre"
+echo "mv input/$lib.R2.fastq input/scratch/$lib.R2.fastq_pre"
+echo "mv input/scratch/$lib$index.P1.filtered.fastq input/$lib.R1.fastq"
+echo "mv input/scratch/$lib$index.P2.filtered.fastq input/$lib.R2.fastq"
+
+# These lines will ensure that the next run through this is going to use the filtered files, and we'll keep filtering stuff out. 
+# This seems to be ready to go.. need to just uncomment it and try it out with th genomes I've got on minidrive
 
 }
 
@@ -59,17 +64,16 @@ shift
 echo "indices = $@"
 indices=$@
 echo $indices
-pass=$libbase
+lib=$libbase
 for i in $indices
 
 do
   echo $i
   echo "----"
-  filterContamsPE $pass $i $indexPath $libbase
-  filterContamsSE $pass $i $indexPath $libbase
-  pass=$libbase$i
+  filterContamsPE $lib $i $indexPath 
+#   filterContamsSE $lib $i $indexPath 
   echo "-----"
-  echo $pass
+  echo $lib 
 done
 
 

@@ -107,4 +107,4 @@ We don't want it to just report the first one it finds.
 
 So:
 
-bowtie2 -q --phred33 -p 4 --sensitive -I 250 -X 800 --dovetail --met-file bowtie2Metrics-$index.out --un $libbase$index.Unpaired.filtered.fastq --al $libbase$index.Unpaired.contams.fastq --un-conc $libbase$index.P%.filtered.fastq --al-conc $libbase$index.P%.contams.fastq -x $indexPath/$index -1 $pass.P1.filtered.fastq -2 $pass.P2.filtered.fastq -S $pass.paired.$index.sam
+bowtie2 -q --phred33 -p 4 --no-mixed --sensitive -I 250 -X 800 --dovetail --met-file bowtie2Metrics-$index.out --un $libbase$index.Unpaired.filtered.fastq --al $libbase$index.Unpaired.contams.fastq --un-conc $libbase$index.P%.filtered.fastq --al-conc $libbase$index.P%.contams.fastq -x $indexPath/$index -1 $pass.P1.filtered.fastq -2 $pass.P2.filtered.fastq -S $pass.paired.$index.sam
