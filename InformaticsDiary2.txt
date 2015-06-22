@@ -1,0 +1,110 @@
+Working through data grooming pipeline
+
+# first step produce fastqc files
+fastqc -o output/ tinytestR1.fastq tinytestR2.fastq
+
+#1. Initial quality control (fastqc)
+  INPUT: Raw fastq files
+  command: fastqc -o output/ libR1.fastq.gz libR2.fastq.gz
+  OUTPUT: untouched raw fastq file and fastqc zip
+  
+#2. Quality and/or length-based reads discarding; trimming/discarding of N-containing reads (Trimmomatic),
+Have to crop the first three bases off the front FIRST, with R1 reads
+  INPUT: $libR1 fastq file
+  Command: java -jar trimmomatic/trimmomatic.jar SE -phred33 -trimlog headcrop.trimlog $READSDIR/libR1.fastq.gz $READSDIR/libR1crped.fastq.gz HEADCROP:5
+  OUTPUT: $libR1crped.fastq.gz
+  
+We have a very large number (not sure how many) of 35 bp reads that contain only N. Their quality score is really low, too. 
+But in order to get a good sense of this, it would be nice to do one quick pass with something to just dash all of those to a separate file?
+We could just do a length trim first, minlen:36
+  INPUT: $libR1crped.fastq.gz $libr2.fastq.gz
+  command: java -jar trimmomatic/trimmomatic.jar PE -phred33 -trimlog lib.trimlog $READSDIR/$libR1crped.fastq.gz $READSDIR/$libR2.fastq.gz Output/$libP1.step2.fastq.gz Output/$libU1.step2.fastq.gz Output/$libP2.step2.fastq.gz Output/$libU2.step2.fastq.gz MINLEN:36
+  OUTPUT: $libP1.step2.fastq.gz $libU1.step2.fastq.gz $libP2.step2.fastq.gz $libU2.step2.fastq.gz
+	  Report from Trimmomatic about how many reads got ditched --> that output needs to be sent to a file
+	  
+#3. Adapter removal (Trimmomatic with above step)
+  Trimmomatic with IlluminaClip. We should also at this point just do the full trimmomatic culling that we do: 
+This is done in two steps -- one PE run and one SE run for both unpaired files (if they exist -- hopefully the short read culling doesn't create unpaired files)
+ INPUT: $libP1.step2.fastq.gz $libP2.step2.fastq.gz
+ command: java -jar trimmomatic/trimmomatic.jar PE -phred33 -trimlog $lib.trimlog $READSDIR/$libP1.step2.fastq.gz $READSDIR/$libP2.step2.fastq.gz Output/$libP1.step3.fastq.gz Output/$libU1.step3.fastq.gz Output/$libP2.step3.fastq.gz Output/$libU2.step3.fastq.gz ILLUMINACLIP:adapters1.fasta:2:25:10:1:true LEADING:10 TRAILING:10 SLIDINGWINDOW:4:20 CROP:222  MINLEN:75
+ 
+ ##Possibly an unnecessary step depending on output of step2 -- maybe no unpaired reads from step2
+ INPUT: $libU1.step2.fastq.gz $libU2.step2.fastq.gz
+ command: java -jar trimmomatic/trimmomatic.jar SE -phred33 -trimlog $lib.trimlog $READSDIR/$libU1.step2.fastq.gz Output/$libU1.step3a.fastq.gz ILLUMINACLIP:adapters1.fasta:2:25:10:1:true LEADING:10 TRAILING:10 SLIDINGWINDOW:4:20 CROP:222  MINLEN:75
+ java -jar trimmomatic/trimmomatic.jar SE -phred33 -trimlog $lib.trimlog $READSDIR/$libU2.step2.fastq.gz Output/$libU2.step3a.fastq.gz ILLUMINACLIP:adapters1.fasta:2:25:10:1:true LEADING:10 TRAILING:10 SLIDINGWINDOW:4:20 CROP:222  MINLEN:75
+ OUTPUT: $libP1.step3.fastq.gz $libP2.step3.fastq.gz $libU1.step3.fastq.gz $libU2.step3.fastq.gz $libU1.step3a.fastq.gz $libU2.step3a.fastq.gz
+ 
+ ##Possibly unnecessary
+ cleanup step: At this point let's put the unpaired reads together again...
+ gunzip *U*step3*.fastq.gz 
+ cat $libU1.step3a.fastq >> $libU1.step3.fastq
+ cat $libU2.step3a.fastq >> $libU2.step3.fastq 
+ 
+  
+ 
+#4. phix/contaminant removal
+bowtie on -human genome -saccharomyces -ecoli -phix
+
+INPUT: bowtie indices for hg, sach, ecoli
+	Filtered fastq files
+	
+	command: 
+	bowtie -ft --refout --al $libP1.contaminants.fq --un $libP1_filtered.fq /apps/bowtie/1.0.0/indexes/hg19 $libP1.step3.fastq 
+	bowtie2 -q --phred33 --mm --very-fast -k 1 -I 250 -X 1000 --dovetail --met-file bowtie2Metrics-rRNA.out --un $libUnpaired%.filtered.fastq --al $libUnpaired%.contams.fastq --un-conc $libP%.filtered.fastq --al-conc $libP%.contams.fastq -x $indexPath -1 $libP1.step3.fastq -2 $libP2.step3.fastq -S $libpaired$index.sam
+
+	This will need to be a function that accepts the lib prefix, the index, and the path to the index. 
+	
+	Then I can call the function for each index. 
+	
+
+#7. Merging of PE reads (SeqPrep?)
+INPUT: final filtered reads - $lib.P1.filtered.fastq $lib.P2.filtered.fastq
+#8. Quality trimming + phix/contaminant removal
+#9. Contamination check
+
+
+==== June 20 2015
+
+Writing the SeqPrep functions
+
+INPUT: $libP%.filtered.f
+command: SeqPrep -f $lib.P1.filtered.fastq -r $lib.P2.filtered.fastq -1 $lib.P1.SP.fastq -2 $lib.P2.SP.fastq -s $lib.merged.SP.fastq -g -E $lib.alignments.fasta -A -B 
+
+OUTPUT: Three new files -- <lib-base-name>.P1/2.SP.fastq -- the final files from SeqPrep. These have been merged if possible. 
+
+Complete the data grooming script v.1, and tested on real data. The script made it through the trimmomatic steps, but we need to do some work on the bowtie steps. 
+Propose going to another script at this point, that we pass in the lib base name and a list of bt2 index base names. The script can move through the bt2 indices, renaming the filtered 
+reads each time. 
+
+pseudocode
+set $lib-base-name to something sensible that will get picked up on the first pass
+for each index in index list
+ 
+ run bowtie2 in PE mode on the paired reads for lib-base-name
+      (make sure the name of the filtered reads is set to something that includes that index)
+ 
+ run bowtie2 in SE mode on the single end reads for lib-base-name
+      (make sure the name of the filtered reads is set to something that includes that index)
+      
+ change the variable $lib to be lib-base-name + index.filtered (so that it will find the now filtered reads on the next pass
+ next
+ 
+===
+
+How to run bowtie2 more effectively:
+Set the --no-mixed option -- this means we won't find unpaired alignments, which we're okay with. 
+
+FTFM: 
+If Bowtie 2 cannot find a paired-end alignment for a pair, by default it will go on to look for unpaired alignments for the constituent mates. This is called "mixed mode." To disable mixed mode, set the --no-mixed option.
+
+Set --dovetail because we do definitely want to be able to keep reads that overlap completely -- we will need to be able to check them for adapter readthrough
+
+On the server, we can use the -p option to use multiple threads in parallel. rather than the -mm?
+On the server, use --sensitive rather than --very-fast because we want bowtie2 to be a bit more sure that this is the right place to align the reads.
+
+do NOT set -k 1 because we want it to go through a bit more effort to find the right place to map the pairs. 
+We don't want it to just report the first one it finds. 
+
+So:
+
+bowtie2 -q --phred33 -p 4 --sensitive -I 250 -X 800 --dovetail --met-file bowtie2Metrics-$index.out --un $libbase$index.Unpaired.filtered.fastq --al $libbase$index.Unpaired.contams.fastq --un-conc $libbase$index.P%.filtered.fastq --al-conc $libbase$index.P%.contams.fastq -x $indexPath/$index -1 $pass.P1.filtered.fastq -2 $pass.P2.filtered.fastq -S $pass.paired.$index.sam
