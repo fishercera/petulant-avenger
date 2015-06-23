@@ -21,13 +21,17 @@ indexPath=$3 # The path to the index, ie ~/mini/bt2
 
 echo "Starting bowtie2 with parameters $lib, $index, $indexPath"
 
-echo "bowtie2 -q --phred33 --mm --no-mixed --very-fast -k 1 -I 250 -X 1000 --dovetail --met-file bowtie2Metrics-$index.out --un-conc \
+bowtie2 -q --phred33 --mm --no-mixed --very-fast -k 1 -I 250 -X 1000 --dovetail --met-file bowtie2Metrics-$index.out --un-conc \
       input/scratch/$lib$index.P%.filtered.fastq --al-conc input/scratch/$lib$index.P%.contams.fastq -x $indexPath/$index -1 \
-      input/$lib.R1.fastq -2 input/$lib.R2.fastq -S $lib.paired.$index.sam "
-echo "mv input/$lib.R1.fastq input/scratch/$lib.R1.fastq_pre"
-echo "mv input/$lib.R2.fastq input/scratch/$lib.R2.fastq_pre"
-echo "mv input/scratch/$lib$index.P1.filtered.fastq input/$lib.R1.fastq"
-echo "mv input/scratch/$lib$index.P2.filtered.fastq input/$lib.R2.fastq"
+      input/$lib.R1.fastq -2 input/$lib.R2.fastq -S $lib.paired.$index.sam 
+#       touch input/scratch/$lib$index.P1.filtered.fastq
+#       touch input/scratch/$lib$index.P2.filtered.fastq
+#       touch input/scratch/$lib$index.P1.contams.fastq
+#       touch input/scratch/$lib$index.P2.contams.fastq
+      mv input/$lib.R1.fastq input/scratch/$lib.R1.fastq_pre
+      mv input/$lib.R2.fastq input/scratch/$lib.R2.fastq_pre
+      mv input/scratch/$lib$index.P1.filtered.fastq input/$lib.R1.fastq
+      mv input/scratch/$lib$index.P2.filtered.fastq input/$lib.R2.fastq
 
 # These lines will ensure that the next run through this is going to use the filtered files, and we'll keep filtering stuff out. 
 # This seems to be ready to go.. need to just uncomment it and try it out with th genomes I've got on minidrive
