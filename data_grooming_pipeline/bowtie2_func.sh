@@ -1,19 +1,14 @@
 #!/usr/bin/bash
 
-# This function filters out the contaminants from 
-# quality trimmed reads. 
-
-# USAGE: filterContams <lib-base-name> <index-name> <path/to/index>
-# 
-# function filterContams {
-# lib=$1 
-# index=$2
-# indexPath=$3
-# }
+# This script runs libraries through the bowtie2 decontamination pathway. 
+# USAGE: bowtie2_func.sh <lib-base-name> <path-to-indices> <List that is a name of indices>
+# For example: bowtie2_func.sh ELJ1393 ~/mini/bt2 Greg_rRNA dmelan scerev
 
 
 
-
+# filterContamsPE - this works on paired reads and filters out the pairs that align concordantly. We're being very generous
+# with the definition of concordant, allowing dovetailed reads just in case we get readthrough. 
+#USAGE: filterContamsPE <lib-base-name> <index> <index-path>
 function filterContamsPE {
 lib=$1 # The library base, ie ELJ1393
 index=$2 # The index base, ie Greg_rRNA
@@ -21,8 +16,9 @@ indexPath=$3 # The path to the index, ie ~/mini/bt2
 
 echo "Starting bowtie2 with parameters $lib, $index, $indexPath"
 
-bowtie2 -q --phred33 --mm --no-mixed --very-fast -k 1 -I 250 -X 1000 --dovetail --met-file bowtie2Metrics-$index.out --un-conc \
-      input/scratch/$lib$index.P%.filtered.fastq --al-conc input/scratch/$lib$index.P%.contams.fastq -x $indexPath/$index -1 \
+bowtie2 -q --phred33 --mm --sensitive -I 250 -X 1000 --dovetail --met-file bowtie2Metrics-$index.out --un input/scratch/$lib$index.U.filtered.fastq \
+      --al input/scratch/$lib$index.U.contams.fastq --un-conc input/scratch/$lib$index.P%.filtered.fastq --al-conc input/scratch/$lib$index.P%.contams.fastq \
+      -x $indexPath/$index -1 \
       input/$lib.R1.fastq -2 input/$lib.R2.fastq -S $lib.paired.$index.sam 
 #       touch input/scratch/$lib$index.P1.filtered.fastq
 #       touch input/scratch/$lib$index.P2.filtered.fastq
@@ -49,7 +45,7 @@ function filterContamsSE {
 
   echo "Starting bowtie2 with parameters $pass, $index, $indexPath, $libbase"
 
-  echo "bowtie2 -q --phred33 --mm --very-fast -k 1 -I 250 -X 1000 --met-file bowtie2Metrics-rRNA.out --un input/scratch/$libbase$index.Unpaired.filtered.fastq --al input/scratch/$libbase$index.Unpaired.contams.fastq -U input/scratch/$pass.Unpaired.filtered.fastq -x $indexPath/$index -S input/scratch/$pass.unpaired.$index.sam" 
+  echo "bowtie2 -q --phred33 --mm --sensitive -I 250 -X 1000 --met-file bowtie2Metrics-rRNA.out --un input/scratch/$libbase$index.Unpaired.filtered.fastq --al input/scratch/$libbase$index.Unpaired.contams.fastq -U input/scratch/$pass.Unpaired.filtered.fastq -x $indexPath/$index -S input/scratch/$pass.unpaired.$index.sam" 
 
 
 

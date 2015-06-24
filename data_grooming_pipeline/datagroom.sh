@@ -1,43 +1,24 @@
 #!/usr/bin/bash
 # (c) Cera Fisher 2015
 # data grooming pipeline for my NGS RNA-Seq libraries
+# USAGE: Must hand this script the basename for the library. 
+# This script expects:
+# - The raw reads to be named <library-base>.R1/2.fastq.gz and to be gzipped
+# - To be run from the parent directory of a tree with the following structure:
+# parent:
+#     >input :: Where the raw read files are located
+#          >scratch :: A place for temporary files as they are being processed
+#     >output
+#          >fastqcBEFORE :: where fastqc puts its files pre-processing
+#          >fastqcAFTER :: Where fastqc puts its files after post-processing
+#	   >reads :: Where the final processed files go
+#     >bt2 -- where the bowtie2 indices are, OR symbolic links to those indices!! 
+
+################## SCRIPT OPTIONS #################
+library=$1 #Pass the lib-base-name into the script
 
 
 #################### FUNCTIONS ####################
-	    # This function filters out the contaminants from 
-	    # quality trimmed reads. 
-  # USAGE: filterContams <lib-base-name> <index-name> <path/to/index>
-  
-  library=$1
-  
-function filterContamsPE {
-  lib=$1
-  index=$2
-  indexPath=$3
-
-  echo "Starting bowtie2 with parameters $lib, $index, $indexPath"
-
-  bowtie2 -q --phred33 --mm --very-fast -k 1 -I 250 -X 1000 --dovetail --met-file bowtie2Metrics-rRNA.out --un input/scratch/$lib.Unpaired.filtered.fastq --al input/scratch/$lib.Unpaired.contams.fastq --un-conc input/scratch/$lib.P%.filtered.fastq --al-conc input/scratch/$lib.P%.contams.fastq -x $indexPath/$index -1 input/scratch/$lib.P1.step3.fastq -2 input/scratch/$lib.P2.step3.fastq -S input/scratch/$lib.paired.$index.sam > $lib.$index.log
-
-  cat $lib.$index.log
-
-}
-
-	    # This function filters out the contaminants from 
-	    # quality trimmed reads.
-  #USAGE: filterContamsSE <lib-base-name> <index-name> <path/to/index>
-function filterContamsSE {
-  lib=$1
-  index=$2
-  indexPath=$3
-
-  echo "Starting bowtie2 with parameters $lib, $index, $indexPath"
-
-  bowtie2 -q --phred33 --mm --very-fast -k 1 -I 250 -X 1000 --met-file bowtie2Metrics-rRNA.out --un input/scratch/$lib.filtered.fastq --al input/scratch/$lib.contams.fastq -U input/scratch/$lib.step3.fastq -x $indexPath/$index -S input/scratch/$lib.unpaired.$index.sam > $lib.$index.unpaired.log
-
-  cat $lib.$index.log
-
-}
 
 	  # Removes first five bases from read 1, because they are from the ClontechSmarterOligo
 	  # Only necessary for Clontech libs
@@ -129,25 +110,29 @@ function sp {
 
 #################### Script Starts Here ####################
 
-echo "fastqcB4 $library - WORKS"
-
+echo " trying fastqcB4 $library - "
+# echo "fastqcB$ works"
  fastqcB4 "$library"
 
 echo "Changed working directory"
 cd "input/"
 pwd
 
-echo "crop1 $library - WORKS"
+echo "trying crop1 library"
+# # echo "crop1 $library - WORKS"
 cropR1 "$library" "/home/cera/apps/trimmomatic"
 
- echo "dropTiny - WORKS"
+echo "trying dropTiny $library"
+#  echo "dropTiny - WORKS"
 dropTiny "$library" "/home/cera/apps/trimmomatic"
 
- echo "qualtrimPE - WORKS"
+echo "trying qualtrimPE $library"
+#  echo "qualtrimPE - WORKS"
  qualtrimPE "$library" "/home/cera/apps/trimmomatic"
 
+echo "trying qualtrimSE $library"
 #  USAGE: qualtrimSE <lib.U1/2> <path-to-trimmomatic>
- echo "qualtrimSE - WORKS"
+#  echo "qualtrimSE - WORKS"
 qualtrimSE "$library.U1" "/home/cera/apps/trimmomatic" 
 qualtrimSE "$library.U2" "/home/cera/apps/trimmomatic" 
 
@@ -155,23 +140,31 @@ gunzip scratch/$library.U1.step3*
 gunzip scratch/$library.U2.step3*
 
 cat scratch/$library.U1.step3* > scratch/$library.U1.step3b.fastq
- rm -f scratch/$library.U1.step3.fastq
+rm -f scratch/$library.U1.step3.fastq
 rm -f scratch/$library.U1.step3a.fastq
  
- mv scratch/$library.U1.step3b.fastq scratch/$library.U1.step3.fastq
+mv scratch/$library.U1.step3b.fastq scratch/$library.U1.step3.fastq
 
  cat scratch/$library.U2.step3* > scratch/$library.U2.step3b.fastq
  rm -f scratch/$library.U2.step3.fastq
  rm -f scratch/$library.U2.step3a.fastq
  
  mv scratch/$library.U2.step3b.fastq scratch/$library.U2.step3.fastq
-
+ 
+ mv scratch/$library.P1.step3.fastq.gz $library.R1.fastq.gz
+ mv scratch/$library.P2.step3.fastq.gz $library.R2.fastq.gz
 
  gzip scratch/$library.U*step3*
  rm -f scratch/$library.*step2*
 
- echo "Post trimmomatic cleanup done. Time to run bowtie2."
-echo "Everything works up to this point!" 
+  echo "Post trimmomatic cleanup done. Time to run bowtie2."
+# echo "Everything works up to this point!" 
+echo "---- Unzipping the R1 and R2 files!"
+gunzip $library.R*.fastq.gz
+cd ..
+pwd # Move back up to parent directory -- TODO fix this directory nonsense, make sure everything works from the parent directory
+bash ~/scripts/data_grooming_pipeline/bowtie2_func.sh $library bt2 amphibia.rRNA
+
 
 # # cd ../
 # pwd
