@@ -13,4 +13,7 @@
 # Enter your commands below -- the command you were submitting without the "qsub" beginning
 # Run this script by typing at the prompt: qsub fastqc.sh 
 
-fastqc --noextract -o /scratch/crfisher/PEData/fastqcReports/ /scratch/crfisher/PEData/*.fastq.gz
+OUTDIR=$1
+LOCDIR=$2
+
+fastqc --noextract -o $OUTDIR $LOCDIR/*.fastq.gz
