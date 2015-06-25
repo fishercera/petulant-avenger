@@ -108,3 +108,25 @@ We don't want it to just report the first one it finds.
 So:
 
 bowtie2 -q --phred33 -p 4 --no-mixed --sensitive -I 250 -X 800 --dovetail --met-file bowtie2Metrics-$index.out --un $libbase$index.Unpaired.filtered.fastq --al $libbase$index.Unpaired.contams.fastq --un-conc $libbase$index.P%.filtered.fastq --al-conc $libbase$index.P%.contams.fastq -x $indexPath/$index -1 $pass.P1.filtered.fastq -2 $pass.P2.filtered.fastq -S $pass.paired.$index.sam
+
+=== June 23 2015
+OK, I've finally got this working pretty well! The only thing I need to do is hook it up to the Trimmomatic steps. Let's go back to our tiny test!
+
+Made tiny test (40000 lines) of 1387. Have put it through the pipeline up to the step of filtering contams from the 
+unpaired (single end) reads. This is all working pretty much splendidly. 
+
+How shall I write this part? We have a nice loop going for the paired end:
+  for i in $indices
+  do
+    echo $i
+    echo "----"
+    filterContamsPE $lib $i $indexPath 
+    echo "-----"
+    echo $lib 
+  done
+
+  And the filterContamsPE function is able to find the reads that were filtered from the last time because at the end of the filtering it renames them to what it expected to begin with. 
+  
+  With the filterContamsSE function, we SHOULD be able to do much the same thing. The reads will get a new name from bowtie, $lib.$index.U.filtered.fastq and $lib.index.U.contams.fastq -- and after we finish bowtie, we should rename the "filtered" one to be what we expected it to be to begin with. 
+  
+  One thing we have to deal with is that the filterContamsPE will be creating small sets of unpairedfiltered reads as it goes. We have to make sure that those all get collected and don't fall by the wayside. And then, the maximally efficient thing to do is to cat all those together 
