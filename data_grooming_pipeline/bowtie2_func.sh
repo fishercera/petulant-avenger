@@ -31,6 +31,7 @@ bowtie2 -q --phred33 --mm --sensitive -I 250 -X 1000 --dovetail --met-file bowti
 
 # These lines will ensure that the next run through this is going to use the filtered files, and we'll keep filtering stuff out. 
 # This seems to be ready to go.. need to just uncomment it and try it out with th genomes I've got on minidrive
+touch Pairedbowtie$index.done
 
 }
 
@@ -38,14 +39,19 @@ bowtie2 -q --phred33 --mm --sensitive -I 250 -X 1000 --dovetail --met-file bowti
 # Output of this function will be the output of the bowtie2 command
 
 function filterContamsSE {
-  pass=$1
+  lib=$1
   index=$2
   indexPath=$3
-  libbase=$4
-
+# Input files need to be in the form <lib-base-name>.U1/2.filtered.fastq 
   echo "Starting bowtie2 with parameters $pass, $index, $indexPath, $libbase"
+echo "bowtie2 -q --phredd33 --mm --sensitive --met-file bowtie2SEMetrics-$index.out --un input/scratch/$lib$index.U1.filtered.fastq, input/scratch/$lib$index.U2.filtered.fastq \
+    --al input/scratch/$lib$index.U1.contams.fastq, input/scratch/$lib$index.U2.contams.fastq -x $indexPath/$index -U input/scratch/$lib.U1.filtered.fastq, input/scratch/$lib.U2.filtered.fastq"
 
-  echo "bowtie2 -q --phred33 --mm --sensitive -I 250 -X 1000 --met-file bowtie2Metrics-rRNA.out --un input/scratch/$libbase$index.Unpaired.filtered.fastq --al input/scratch/$libbase$index.Unpaired.contams.fastq -U input/scratch/$pass.Unpaired.filtered.fastq -x $indexPath/$index -S input/scratch/$pass.unpaired.$index.sam" 
+mv input/scratch/$lib$index.U1.filtered.fastq input/scratch/$lib.U1.filtered.fastq
+
+mv input/scratch/$lib$index.U2.filtered.fastq input/scratch/$lib.U2.filtered.fastq
+
+touch Unpairedbowtie$index.done
 
 
 

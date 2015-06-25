@@ -1,4 +1,3 @@
-
 #!/opt/perl/bin/perl
 use warnings;
 # Calculating the reverse complement of a strand of DNA
