@@ -117,24 +117,24 @@ echo " trying fastqcB4 $library - "
 echo "Changed working directory"
 cd "input/"
 pwd
-
+trimpath="/home/cfisher/trimmomatic"
 echo "trying crop1 library"
 # # echo "crop1 $library - WORKS"
-cropR1 "$library" "/home/cera/apps/trimmomatic"
+cropR1 "$library" "$trimpath"
 
 echo "trying dropTiny $library"
 #  echo "dropTiny - WORKS"
-dropTiny "$library" "/home/cera/apps/trimmomatic"
+dropTiny "$library" "$trimpath" 
 
 echo "trying qualtrimPE $library"
 #  echo "qualtrimPE - WORKS"
- qualtrimPE "$library" "/home/cera/apps/trimmomatic"
+ qualtrimPE "$library" "$trimpath"
 
 echo "trying qualtrimSE $library"
 #  USAGE: qualtrimSE <lib.U1/2> <path-to-trimmomatic>
 #  echo "qualtrimSE - WORKS"
-qualtrimSE "$library.U1" "/home/cera/apps/trimmomatic" 
-qualtrimSE "$library.U2" "/home/cera/apps/trimmomatic" 
+qualtrimSE "$library.U1"  "$trimpath"
+qualtrimSE "$library.U2" "$trimpath" 
 
 gunzip scratch/$library.U1.step3*
 gunzip scratch/$library.U2.step3*
