@@ -16,7 +16,7 @@
 
 ################## SCRIPT OPTIONS #################
 library=$1 #Pass the lib-base-name into the script
-
+TRIMPATH=$2 #Pass the location of trimmomatic.jar to the script
 
 #################### FUNCTIONS ####################
 
@@ -44,8 +44,11 @@ function dropTiny {
   
   echo "Dropping tiny reads of $lib.R1.fastq.gz and $lib.R2.fastq.gz"
   
-  java -jar $wheretrim/trimmomatic.jar PE -phred33 -trimlog $lib.trimlog $lib.R1.fastq.gz $lib.R2.fastq.gz scratch/$lib.P1.step2.fastq.gz scratch/$lib.U1.step2.fastq.gz scratch/$lib.P2.step2.fastq.gz scratch/$lib.U2.step2.fastq.gz MINLEN:36 > $lib.step2.log
-}
+  java -jar $wheretrim/trimmomatic.jar PE -phred33 -trimlog $lib.trimlog input/$lib.R1.fastq.gz input/$lib.R2.fastq.gz input/scratch/$lib.P1.step2.fastq.gz scratch/$lib.U1.step2.fastq.gz scratch/$lib.P2.step2.fastq.gz scratch/$lib.U2.step2.fastq.gz MINLEN:36 
+  mv input/scratch/$lib.P1.step2.fastq.gz input/$lib.R1.fastq.gz
+  mv input/scratch/$lib.P2.step2.fastq.gz input/$lib.R2.fastq.gz
+  
+  }
 
 
 	  # Full trimming with adapter removal
@@ -56,9 +59,13 @@ function qualtrimPE {
   wheretrim=$2
   
   echo "Performing paired end quality trimming on $lib.P1.step2.fastq.gz and $lib.P2.step2.fastq.gz" 
+  echo "\
+  java -jar $wheretrim/trimmomatic.jar PE -phred33 -trimlog $lib.trimlog input/$lib.R1.fastq.gz input/$lib.R2.fastq.gz input/scratch/$lib.P1.fastq.gz \
+  input/scratch/$lib.U1.fastq.gz input/scratch/$lib.P2.fastq.gz input/scratch/$lib.U2.fastq.gz ILLUMINACLIP:$wheretrim/adapters/TruSeq3-PE.fa:2:30:10 LEADING:10 \
+  TRAILING:10 SLIDINGWINDOW:4:20 MINLEN:65 \
+  "
   
-  java -jar $wheretrim/trimmomatic.jar PE -phred33 -trimlog $lib.trimlog scratch/$lib.P1.step2.fastq.gz scratch/$lib.P2.step2.fastq.gz scratch/$lib.P1.step3.fastq.gz scratch/$lib.U1.step3.fastq.gz scratch/$lib.P2.step3.fastq.gz scratch/$lib.U2.step3.fastq.gz ILLUMINACLIP:$wheretrim/adapters/adapters1.fasta:2:25:10:1:true LEADING:10 TRAILING:10 SLIDINGWINDOW:4:20 CROP:222 MINLEN:75 >  $lib.step3.log
-  cat $lib.step3.log
+  touch qualtrimPE.done
 }
 
 
@@ -70,7 +77,7 @@ function qualtrimSE {
   
   echo "Single end quality trim on $lib.step2.fastq.gz"
   
-  java -jar $wheretrim/trimmomatic.jar SE -phred33 -trimlog $lib.trimlog scratch/$lib.step2.fastq.gz scratch/$lib.step3a.fastq.gz LEADING:10 TRAILING:10 SLIDINGWINDOW:4:20 CROP:222 MINLEN:75 > $lib.step3a.log
+  java -jar $wheretrim/trimmomatic.jar SE -phred33 -trimlog $lib.trimlog scratch/$lib.step2.fastq.gz scratch/$lib.step3a.fastq.gz ILLUMINACLIP:$wheretrim/adapters/TruSeq3-SE.fa:2:30:10 LEADING:10 TRAILING:10 SLIDINGWINDOW:4:20 MINLEN:65 > $lib.step3a.log
   cat $lib.step3a.log
 }
 
@@ -110,88 +117,18 @@ function sp {
 
 #################### Script Starts Here ####################
 
-echo " trying fastqcB4 $library - "
-# echo "fastqcB$ works"
- fastqcB4 "$library"
-
-echo "Changed working directory"
-cd "input/"
-pwd
-
-echo "trying crop1 library"
-# # echo "crop1 $library - WORKS"
-cropR1 "$library" "/home/cera/apps/trimmomatic"
-
-echo "trying dropTiny $library"
-#  echo "dropTiny - WORKS"
-dropTiny "$library" "/home/cera/apps/trimmomatic"
 
 echo "trying qualtrimPE $library"
 #  echo "qualtrimPE - WORKS"
- qualtrimPE "$library" "/home/cera/apps/trimmomatic"
-
-echo "trying qualtrimSE $library"
-#  USAGE: qualtrimSE <lib.U1/2> <path-to-trimmomatic>
-#  echo "qualtrimSE - WORKS"
-qualtrimSE "$library.U1" "/home/cera/apps/trimmomatic" 
-qualtrimSE "$library.U2" "/home/cera/apps/trimmomatic" 
-
-gunzip scratch/$library.U1.step3*
-gunzip scratch/$library.U2.step3*
-
-cat scratch/$library.U1.step3* > scratch/$library.U1.step3b.fastq
-rm -f scratch/$library.U1.step3.fastq
-rm -f scratch/$library.U1.step3a.fastq
- 
-mv scratch/$library.U1.step3b.fastq scratch/$library.U1.step3.fastq
-
- cat scratch/$library.U2.step3* > scratch/$library.U2.step3b.fastq
- rm -f scratch/$library.U2.step3.fastq
- rm -f scratch/$library.U2.step3a.fastq
- 
- mv scratch/$library.U2.step3b.fastq scratch/$library.U2.step3.fastq
- 
- mv scratch/$library.P1.step3.fastq.gz $library.R1.fastq.gz
- mv scratch/$library.P2.step3.fastq.gz $library.R2.fastq.gz
-
- gzip scratch/$library.U*step3*
- rm -f scratch/$library.*step2*
+qualtrimPE "$library" $TRIMPATH
 
   echo "Post trimmomatic cleanup done. Time to run bowtie2."
 # echo "Everything works up to this point!" 
 echo "---- Unzipping the R1 and R2 files!"
 gunzip $library.R*.fastq.gz
-cd ..
-pwd # Move back up to parent directory -- TODO fix this directory nonsense, make sure everything works from the parent directory
-bash ~/scripts/data_grooming_pipeline/bowtie2_func.sh $library bt2 amphibia.rRNA
+
+# bash ~/scripts/data_grooming_pipeline/bowtie2_func.sh $library bt2 amphibia.rRNA
+
+echo "To run bowtie2: ~/scripts/data_grooming_pipeline/bowtie2_func.sh $library bt2 <indices>"
 
 
-# # cd ../
-# pwd
-# 
-# gunzip input/scratch/*fastq.gz
-# # filterContamsPE "$library" "Greg_rRNA" "bt2"
-# echo "filterContamsPE works"
-# # filterContamsSE "$library.U1" "Greg_rRNA" "bt2"
-# echo "filterContamsSE WORKS"
-# # filterContamsSE "$library.U2" "Greg_rRNA" "bt2"
-# 
-# echo "SeqPrep function WORKS"
-# # sp "$library"
-# 
-# # gzip input/scratch/$library.U*.fastq
-# # mv input/scratch/$library.U*.filtered.fastq.gz output/
-# 
-# # TODO test to see if there's a fastqcAFTER directory, if not make it
-# 
-# # fastqcAFTER "$library"
-# 
-# echo "rm -rf input/scratch/"
-# echo "rm -rf input/*log"
-# 
-# # gunzip output/*.fastq.gz
-# echo "Cleaning up read files"
-# echo "cat output/$library.P1.SP.fastq output/$library.U1.filtered.fastq output/$library.merged.SP.fastq > output/$library.left.fastq"
-# echo "cat output/$library.P2.SP.fastq output/$library.U2.filtered.fastq > output/$library.right.fastq"
-# 
-# # gzip output/$library.left.fastq output/$library.right.fastq
