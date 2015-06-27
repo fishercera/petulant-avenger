@@ -10,7 +10,7 @@ print "$seq\n";
 
 my $b = 0;
 
-for (my $n = 0; $n <length($seq)-19; $n+=1) {
+for (my $n = 0; $n <length($seq)-19; $n+=3) {
 #   print substr($seq, $n, 20), "\n";
     my $sub = substr($seq, $n, 20);
     my $count = `grep -c "$sub" $file`;
