@@ -130,3 +130,32 @@ How shall I write this part? We have a nice loop going for the paired end:
   With the filterContamsSE function, we SHOULD be able to do much the same thing. The reads will get a new name from bowtie, $lib.$index.U.filtered.fastq and $lib.index.U.contams.fastq -- and after we finish bowtie, we should rename the "filtered" one to be what we expected it to be to begin with. 
   
   One thing we have to deal with is that the filterContamsPE will be creating small sets of unpairedfiltered reads as it goes. We have to make sure that those all get collected and don't fall by the wayside. And then, the maximally efficient thing to do is to cat all those together 
+  
+==== 6/26/2015
+
+I HAVE MY DATA BACK FROM MY KAPA RUNS!
+There is some adapter/primer contamination. Running my grep/substrings perl script on library 4-ECbPro:
+
+(This is for PCRPrimer1 which is also PrefixPE1/1)
+TCTACACTCTTTCCCTACAC: 36
+ 
+CTACACTCTTTCCCTACACG: 34
+ 
+TACACTCTTTCCCTACACGA: 34
+ 
+ACACTCTTTCCCTACACGAC: 35
+ 
+CACTCTTTCCCTACACGACG: 37
+ 
+ACTCTTTCCCTACACGACGC: 35
+ 
+CTCTTTCCCTACACGACGCT: 34
+ 
+TCTTTCCCTACACGACGCTC: 34
+ 
+CTTTCCCTACACGACGCTCT: 31
+
+Nothing like the flowcell contams we have with the Clontech libraries, but this is still pretty important to get rid of!! That's definitely enough contamination to seriously screw up 
+assemblies AND FPKM counts. 
+
+We should definitely make sure that the IlluminaClip takes care of this. 

@@ -69,6 +69,7 @@ function qualtrimPE {
 }
 
 
+
 	  # qualtrimSE We have some unpaired files from the step2 that we need to take care of separately. 
   # USAGE: qualtrimSE <lib.U1/2> <path-to-trimmomatic>
 function qualtrimSE {
