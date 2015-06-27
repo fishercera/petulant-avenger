@@ -62,7 +62,6 @@ gunzip input/$library.R*.fastq.gz
 
 
 # bash ~/scripts/data_grooming_pipeline/bowtie2_func.sh $library bt2 amphibia.rRNA
-
 echo "To run bowtie2: ~/scripts/data_grooming_pipeline/bowtie2_func.sh $library bt2 <indices>"
 
 bash $my_dir/bowtie2_func.sh $library $INDEXPATH amphibia.rRNA dmelan hg19
@@ -70,12 +69,15 @@ bash $my_dir/bowtie2_func.sh $library $INDEXPATH amphibia.rRNA dmelan hg19
 A=GATCGGAAGAGCACACG
 B=AGATCGGAAGAGCGTCGT
 
-sp $library $A $B
+mv input/$library.R1.fastq output/.
+mv input/$library.R2.fastq output/.
+mv input/scratch/$library.U.filtered.fastq output/.
+#sp $library $A $B
 
-fastqcAFTER $library
+#fastqcAFTER $library
 
 ######### Let's Cleanup #########
-rm -rf input/scratch/*
+#rm -rf input/scratch/*
 
 
 

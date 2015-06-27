@@ -242,3 +242,10 @@ Maximum error rate: 10.00%
 Adapter 'AGATCGGAAGAGCACACGTCTGAACTCCAGTCAC', length 34, was trimmed 36085 times.
 No. of allowed errors:
 0-9 bp: 0; 10-19 bp: 1; 20-29 bp: 2; 30-34 bp: 3
+
+
+switching forks -- trying to get ths datagroom pipeline just running by itself on the cluster -- it's now ready to go for both salamanders and bugs.
+But when I try to qsub -- the script can't run because it moves to a node where it doesn't have all of the files it wants. So I need to be able to get it to use
+the files that are in my home directory. :-/ 
+
+
