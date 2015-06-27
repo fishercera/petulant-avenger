@@ -61,6 +61,10 @@ if [ ! -d "$DESTINATION_DIR" ]; then
 mkdir -p $DESTINATION_DIR
 fi
 
+cp $PROJECT_SUBDIR/$SCRIPTS/data_grooming_pipeline/datagroom_funcs.sh .
+cp $PROJECT_SUBDIR/$SCRIPTS/data_grooming_pipeline/datagroom_plethodontids.sh .
+cp $PROJECT_SUBDIR/$SCRIPTS/data_grooming_pipeline/bowtie2_funcs.sh .
+
 # navigate to the working directory
 cd $WORKING_DIR
 
