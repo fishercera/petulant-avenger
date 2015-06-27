@@ -50,7 +50,7 @@ function qualtrimPE {
   
   echo "Performing paired end quality trimming on $lib.R1.fastq.gz and $lib.R2.fastq.gz" 
   
-  java -jar $wheretrim/trimmomatic.jar PE -phred33 -trimlog $lib.trimlog input/$lib.R1.fastq.gz input/$lib.R2.fastq.gz input/scratch/$lib.P1.trimmed.fastq.gz input/scratch/$lib.U1.step3.fastq.gz input/scratch/$lib.P2.trimmed.fastq.gz input/scratch/$lib.U2.step3.fastq.gz ILLUMINACLIP:$wheretrim/adapters/TruSeq3-PE.fa:2:30:10 LEADING:10 TRAILING:10 SLIDINGWINDOW:4:15 MINLEN:60 
+  java -jar $wheretrim/trimmomatic.jar PE -phred33 -trimlog $lib.trimlog input/$lib.R1.fastq.gz input/$lib.R2.fastq.gz input/scratch/$lib.P1.trimmed.fastq.gz input/scratch/$lib.U1.step3.fastq.gz input/scratch/$lib.P2.trimmed.fastq.gz input/scratch/$lib.U2.step3.fastq.gz ILLUMINACLIP:$wheretrim/adapters/Illumina.fa:2:30:10 LEADING:10 TRAILING:10 SLIDINGWINDOW:4:15 MINLEN:60 
   
   mv input/$lib.R1.fastq.gz input/scratch/$lib.R1.fastq.gz_preTrim
   mv input/$lib.R2.fastq.gz input/scratch/$lib.R2.fastq.gz_preTrim
@@ -69,12 +69,9 @@ function qualtrimSE {
   
   echo "Single end quality trim on $lib.step2.fastq.gz"
   
-  java -jar $wheretrim/trimmomatic.jar SE -phred33 -trimlog $lib.trimlog input/scratch/$lib.U1.step2.fastq.gz input/scratch/$lib.U1.step2.trimmed.fastq.gz ILLUMINACLIP:$wheretrim/adapters/TruSeq3-SE.fa:2:30:10 LEADING:10 TRAILING:10 SLIDINGWINDOW:4:15 MINLEN:60 
+  java -jar $wheretrim/trimmomatic.jar SE -phred33 -trimlog $lib.trimlog input/scratch/$lib.U1.step2.fastq.gz input/scratch/$lib.U1.step2.trimmed.fastq.gz ILLUMINACLIP:$wheretrim/adapters/Illumina.fa:2:30:10 LEADING:10 TRAILING:10 SLIDINGWINDOW:4:15 MINLEN:60 
 
-  java -jar $wheretrim/trimmomatic.jar SE -phred33 -trimlog $lib.trimlog input/scratch/$lib.U2.step2.fastq.gz input/scratch/$lib.U2.step2.trimmed.fastq.gz ILLUMINACLIP:$wheretrim/adapters/TruSeq3-SE.fa:2:30:10 LEADING:10 TRAILING:10 SLIDINGWINDOW:4:15 MINLEN:60 
-  
-
-
+  java -jar $wheretrim/trimmomatic.jar SE -phred33 -trimlog $lib.trimlog input/scratch/$lib.U2.step2.fastq.gz input/scratch/$lib.U2.step2.trimmed.fastq.gz ILLUMINACLIP:$wheretrim/adapters/Illumina.fa:2:30:10 LEADING:10 TRAILING:10 SLIDINGWINDOW:4:15 MINLEN:60 
   
 }
 
@@ -123,7 +120,7 @@ function sp {
   echo "Performing SeqPrep on $lib.P1.filtered.fastq and $lib.P2.filtered.fastq"
   
   SeqPrep -f input/$lib.R1.filtered.fastq -r input/$lib.R2.filtered.fastq -1 output/$lib.P1.SP.fastq.gz -2 output/$lib.P2.SP.fastq.gz -s output/$lib.merged.SP.fastq.gz -A $A -B $B -E output/$lib.alignments.fasta    
-  
+ touch SeqPrep.done 
 }
 
 

@@ -16,7 +16,7 @@ indexPath=$3 # The path to the index, ie ~/mini/bt2
 
 echo "Starting bowtie2 with parameters $lib, $index, $indexPath"
 
-bowtie2 -q --phred33 --mm --sensitive -I 250 -X 1000 --dovetail --met-file bowtie2Metrics-$index.out --un input/scratch/$lib$index.U.filtered.fastq \
+bowtie2 -q --phred33 --mm --very-sensitive -I 250 -X 1000 --dovetail --met-file bowtie2Metrics-$index.out --un input/scratch/$lib$index.U.filtered.fastq \
       --al input/scratch/$lib$index.U.contams.fastq --un-conc input/scratch/$lib$index.P%.filtered.fastq --al-conc input/scratch/$lib$index.P%.contams.fastq \
       -x $indexPath/$index -1 \
       input/$lib.R1.fastq -2 input/$lib.R2.fastq -S $lib.paired.$index.sam 
@@ -53,7 +53,7 @@ function filterContamsSE {
 # Input files need to be in the form <lib-base-name>.U1/2.filtered.fastq 
   echo "Starting bowtie2 with parameters $lib, $index, $indexPath"
   cp input/$lib.U.trimmed.fastq input/scratch/$lib.U.filtered.fastq
-  bowtie2 -q --phredd33 --p 4 --sensitive --met-file bowtie2SEMetrics-$index.out --un input/scratch/$lib$index.U.filtered.fastq --al input/scratch/$lib$index.U.contams.fastq -x $indexPath/$index -U input/scratch/$lib.U.filtered.fastq
+  bowtie2 -q --phred33 -p 4 --very-sensitive --met-file bowtie2SEMetrics-$index.out --un input/scratch/$lib$index.U.filtered.fastq --al input/scratch/$lib$index.U.contams.fastq -x $indexPath/$index -U input/scratch/$lib.U.filtered.fastq
   mv input/scratch/$lib$index.U.filtered.fastq input/scratch/$lib.U.filtered.fastq
 
   touch Unpairedbowtie$index.done
