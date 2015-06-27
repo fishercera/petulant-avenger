@@ -21,8 +21,8 @@ INDEXPATH=$3 #Pass the location of the indices to the script
 
 #################### FUNCTIONS ####################
 # Remember when we were trying to not have to have the functions in the same file as the script?
-# my_dir="$(dirname "$0")"
-# echo "$my_dir"
+ my_dir="$(dirname "$0")"
+ echo "$my_dir"
 # 
 # source $my_dir/datagroom_funcs.sh
 
@@ -141,8 +141,8 @@ gunzip input/$library.R*.fastq.gz
 # bash ~/scripts/data_grooming_pipeline/bowtie2_func.sh $library bt2 amphibia.rRNA
 
 echo "To run bowtie2: ~/scripts/data_grooming_pipeline/bowtie2_func.sh $library bt2 <indices>"
-
-bash $my_dir/bowtie2_func.sh $library $INDEXPATH e_coli scerev
+echo "#bash $my_dir/bowtie2_func.sh $library $INDEXPATH e_coli scerev hg19"
+echo "Then try running cutadapt or SeqPrep"
 
 # A=forwardadapter
 # B=reverseadapter
