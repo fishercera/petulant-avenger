@@ -1,7 +1,7 @@
 #!/usr/bin/bash
 #$ -cwd
 #$ -S /bin/bash
-#$ -pe 4
+#$ -pe smp 4
 #$ -o Pleth.out
 #$ -e Pleth.err
 #$ -m besa
