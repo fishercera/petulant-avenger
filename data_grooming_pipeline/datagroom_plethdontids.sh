@@ -1,4 +1,14 @@
 #!/usr/bin/bash
+#$ -cwd
+#$ -S /bin/bash
+#$ -pe 4
+#$ -o Pleth.out
+#$ -e Pleth.err
+#$ -m besa
+#$ -M cera.fishera@uconn.edu
+#$ -N trimtest
+
+
 # (c) Cera Fisher 2015
 # data grooming pipeline for my NGS RNA-Seq libraries
 # USAGE: Must hand this script the basename for the library. 
