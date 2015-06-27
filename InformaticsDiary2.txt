@@ -215,9 +215,12 @@ Which IS installed on the cluster!
 Let's see how cutadapt does on the same files, using the following sequences--
 R2 primer (contaminating R1 reads)
 AGATCGGAAGAGCACACGTCTGAACTCCAGTCAC
+AGATCGGAAGAGCGGTTCAGCAGGAATGCCGAGACCGATCTCGTATGCCGTCTTCTGCTTG
+
 
 and R1 primer (contaminating R2 reads)
 AGATCGGAAGAGCGTCGTGTAGGGAAAGAGTGTA
+AGATCGGAAGAGCGTCGTGTAGGGAAAGAGTGTAGATCTCGGTGGTCGCCGTATCATT
 
 so this will be
 cutadapt -m 35 -O 10 -a AGATCGGAAGAGCACACGTCTGAACTCCAGTCAC -o 4-ECbPro.R1.cutadapt.fastq
@@ -248,4 +251,93 @@ switching forks -- trying to get ths datagroom pipeline just running by itself o
 But when I try to qsub -- the script can't run because it moves to a node where it doesn't have all of the files it wants. So I need to be able to get it to use
 the files that are in my home directory. :-/ 
 
+NO, really having a LOT of trouble with this. 
 
+OK, right now all I want to do is quickly run fastqcBefore and then Trimmomatic on the ECc group of reads. 
+I've updated datagroombugs.sh to have all the functions in it. It SHOULD WORK if I can move all of the files to the right directory! 
+
+That worked for trimmomatic stuff. I submitted a job called runtrim.sh that contained just the command:
+bash datagroombugs.sh $lib $TRIMPATH bt2
+
+job was submitted like so:
+qsub -o <libbase>.out -e <libbase>.err -N Trim<libbase> runtrim.sh <libbase>
+
+Ran fastqc on the output...
+So the
+quality looks a lot better, but it does not seem to have actually gotten all of the adapter sequence. There are still overrepresented sequences that look like primer sequences. 
+
+SO! 
+
+We have to run Bowtie next, because Bowtie will fail PE if the number of reads isn't the same, and cutadapt will ditch reads indiscriminately (doesn't have a PE mode)
+Running bowtie on... 
+hg19 (for humans!) and e_coli (bacteria!)
+it'd be nice if I had an RNA index, but I don't -- I'll have to make one from the RNA contig in my first assembly. 
+
+oh man bowtie is sooooooo slow
+
+I have to figure out how I'm going to do this without babysitting it the whole time. I really SHOULD be able to just run all the scripts at once.
+
+I suppose I could write a quick script that did all the QSubs, too. 
+
+Back on the vertebrates side of things, ELJ's clontech libraries DEFINITELY have readthrough, but the Nextera libraries do NOT. This makes a lot of sense, since the Nextera libraries were WAY longer than
+the clontech ones are. A useful thing to think about -- maybe it really is best to size select out the little stuff as much as possible. 
+As a comparison, here are the counts for contams in the ELJ1387 R2 reads
+ra@rockapella:~/DATA/ClonTechLibs$ perl ~/scripts/utilities/getsubstrings.pl $SEARCH ELJ1387_S6_L001_R2_001.fastq 
+AGATCGGAAGAGCGTCGTGTAGGGAAAGAGTGTAGATCTCGGTGGTCGCCGTATCATT
+AGATCGGAAGAGCGTCGTGT: 3030
+TCGGAAGAGCGTCGTGTAGG: 2909
+GAAGAGCGTCGTGTAGGGAA: 2479
+GAGCGTCGTGTAGGGAAAGA: 2372
+CGTCGTGTAGGGAAAGAGTG: 3621
+CGTGTAGGGAAAGAGTGTAG: 4120
+GTAGGGAAAGAGTGTAGATC: 5132
+GGGAAAGAGTGTAGATCTCG: 6087
+AAAGAGTGTAGATCTCGGTG: 6609
+GAGTGTAGATCTCGGTGGTC: 6850
+TGTAGATCTCGGTGGTCGCC: 6958
+AGATCTCGGTGGTCGCCGTA: 6653 
+TCTCGGTGGTCGCCGTATCA: 6200
+
+versus the ELJ1393 R2 reads, which we size selected
+
+cera@rockapella:~/DATA/ClonTechLibs$ perl ~/scripts/utilities/getsubstrings.pl $SEARCH ELJ1393_S7_L001_R2_001.fastq 
+AGATCGGAAGAGCGTCGTGTAGGGAAAGAGTGTAGATCTCGGTGGTCGCCGTATCATT
+AGATCGGAAGAGCGTCGTGT: 165
+TCGGAAGAGCGTCGTGTAGG: 150
+GAAGAGCGTCGTGTAGGGAA: 121
+GAGCGTCGTGTAGGGAAAGA: 99
+CGTCGTGTAGGGAAAGAGTG: 168
+CGTGTAGGGAAAGAGTGTAG: 163
+GTAGGGAAAGAGTGTAGATC: 199
+GGGAAAGAGTGTAGATCTCG: 251
+AAAGAGTGTAGATCTCGGTG: 241
+GAGTGTAGATCTCGGTGGTC: 257
+TGTAGATCTCGGTGGTCGCC: 266
+AGATCTCGGTGGTCGCCGTA: 238
+TCTCGGTGGTCGCCGTATCA: 205
+
+bowtie2 -- Uh oh, did something wrong -- when my bowtie2 script gets done it ends up putting empty files back instead of the correctly filtered contents. Stupid! 
+Luckily, my scripts still have it save the fastq files from right before it does the next index, so I can just recover those from the "pree_coli" fastqs. But I need to fix that
+in the actual script -- I wonder what went wrong?
+
+It isn't clear, but somehow the files got mv'd over each other in a way that erased them. 
+*****Don't forget to copy the edited bowtie2_func.sh over to petulant-avenger and GIT COMMIT/PUSH!*******
+ 1106  qsub -o bw3.out -e bw3.err -N bw3 runbowtie.sh 3-ECcPro
+
+ we ran bowtie this time requesting 8 cpus -- this does actually seem to go a bit faster. 
+ There is not insignificant human genome contamination. 
+ 
+ AFTER THIS, we run cutadapt. And then we're done boom. 
+ THEN we do fastqc again, and hopefully we don't see any over-represented sequences that we'd attribute to anything but real transcript abundance...?
+ 
+ Found what went wrong with bowtie. I had left out the name for the file for the filtered concordant reads to go to. Yup.
+ 
+ ALSO, the index for e_coli didn't exist in the directory I told bowtie2 to look in. I've put it there now. 
+ 
+ Just ran:
+  1070  qsub -o bw3.out -e bw3.err -N bw3 runbowtie.sh 3-ECcPro
+
+  The batch I should run for the rest of this set is:
+  qsub -o bw10.out -e bw10.err -N bw10 runbowtie.sh 10-ECcWings
+  
+ 
