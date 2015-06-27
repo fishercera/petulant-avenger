@@ -140,7 +140,7 @@ There is some adapter/primer contamination. Running my grep/substrings perl scri
 TCTACACTCTTTCCCTACAC: 36
  
 CTACACTCTTTCCCTACACG: 34
- 
+
 TACACTCTTTCCCTACACGA: 34
  
 ACACTCTTTCCCTACACGAC: 35
@@ -159,3 +159,86 @@ Nothing like the flowcell contams we have with the Clontech libraries, but this 
 assemblies AND FPKM counts. 
 
 We should definitely make sure that the IlluminaClip takes care of this. 
+
+==== 6/27/15
+
+OK, so we definitely have PRCprimer 1 contamination in the KAPA libraries. Want to run Illumina Clip on them to make damn sure we don't include that
+in our assemblies!!
+
+But we really need to know if Illumina Clip is doing the job we think it's doing -- if not, we need to use CutAdapt or even just drop these by running a perl script that just
+ditches the whole read if we find contams. I'm finding a max of like 10,000 reads in the R2 reads, which is the tiniest drop in the bucket relative to my data -- but will REALLY screw up 
+the assembly. 
+
+The sequence I'm finding in R2 is:
+AGATCGGAAGAGCGTCGTGTAGGGAAAGAGTGTAGATCTCGGTGGTCGCCGTATCATT <-- PRC primer 1_rc
+  And a little bit of flow-cell:
+GTGTAGATCTCGGTGGTCGCCGTATCATTAAAAAAAAAA <-- flowcell adapter rc
+  
+  java -jar /home/cfisher/bio/apps/trimmomatic/trimmomatic.jar PE -phred33 -trimlog 4ECproTrim.log 4-ECbPro.R1.fastq 4-ECbPro.R2.fastq scratch/4-ECbPro.P1.trimmed.fastq scratch/4-ECbPro.U1.trimmed.fast scratch/4-ECbPro.P2.trimmed.fastq scratch/4-ECbPro.U2.trimmed.fastq ILLUMINACLIP:/home/cfisher/bio/apps/trimmomatic/adapters/Illumina.fa:2:30:10
+ch/4-ECbPro.P1.trimmed.fastq scratch/4-ECbPro.U1.trimmed.fast scratch/4-ECbPro.P2.trimmed.fastq scratch/4-ECbPro.U2.trimmed.fastq ILLUMINACLIP:/home/cfisher/bio/apps/trimmomatic/adapters/Illumina.fa:2:30:10
+Using PrefixPair: 'AATGATACGGCGACCACCGAGATCTACACTCTTTCCCTACACGACGCTCTTCCGATCT' and 'CAAGCAGAAGACGGCATACGAGATCGGTCTCGGCATTCCTGCTGAACCGCTCTTCCGATCT'
+Using PrefixPair: 'TACACTCTTTCCCTACACGACGCTCTTCCGATCT' and 'GTGACTGGAGTTCAGACGTGTGCTCTTCCGATCT'
+Using Long Clipping Sequence: 'TTTTTTTTTTAATGATACGGCGACCACCGAGATCTACAC'
+Using Long Clipping Sequence: 'TTTTTTTTTTCAAGCAGAAGACGGCATACGA'
+Using Long Clipping Sequence: 'AGATCGGAAGAGCGTCGTGTAGGGAAAGAGTGTAGATCTCGGTGGTCGCCGTATCATT'
+Using Long Clipping Sequence: 'GTGTAGATCTCGGTGGTCGCCGTATCATTAAAAAAAAAA'
+Using Long Clipping Sequence: 'AGATCGGAAGAGCGGTTCAGCAGGAATGCCGAGACCGATCTCGTATGCCGTCTTCTGCTTG'
+Using Long Clipping Sequence: 'CAAGCAGAAGACGGCATACGAGATCGGTCTCGGCATTCCTGCTGAACCGCTCTTCCGATCT'
+Using Long Clipping Sequence: 'AATGATACGGCGACCACCGAGATCTACACTCTTTCCCTACACGACGCTCTTCCGATCT'
+ILLUMINACLIP: Using 2 prefix pairs, 7 forward/reverse sequences, 0 forward only sequences, 0 reverse only sequences
+
+RESULT: 
+Input Read Pairs: 5443843 Both Surviving: 5400270 (99.20%) Forward Only Surviving: 43541 (0.80%) Reverse Only Surviving: 14 (0.00%) Dropped: 18 (0.00%)
+
+
+This very helpful website explains that if we have PCR primer 1 contamination on our R2 reads, then we should have corresponding PCR primer 2 contamination on our R1 reads:
+https://wikis.utexas.edu/display/bioiteam/Evaluating+your+raw+sequencing+data
+
+AND, doing the getsubstrings routine on R1 reads with the PCR 2 primer DOES in fact reveal:
+4-ECbPro.R1.fastq 
+AGATCGGAAGAGCACACGTCTGAACTCCAGTCAC
+AGATCGGAAGAGCACACGTC: 9726
+ 
+TCGGAAGAGCACACGTCTGA: 10805
+ 
+GAAGAGCACACGTCTGAACT: 10034
+ 
+GAGCACACGTCTGAACTCCA: 9393
+ 
+CACACGTCTGAACTCCAGTC: 7993
+
+Which is about what we saw in R2.
+
+The utexas page recommends using cutadapt for this.
+Which IS installed on the cluster!
+
+Let's see how cutadapt does on the same files, using the following sequences--
+R2 primer (contaminating R1 reads)
+AGATCGGAAGAGCACACGTCTGAACTCCAGTCAC
+
+and R1 primer (contaminating R2 reads)
+AGATCGGAAGAGCGTCGTGTAGGGAAAGAGTGTA
+
+so this will be
+cutadapt -m 35 -O 10 -a AGATCGGAAGAGCACACGTCTGAACTCCAGTCAC -o 4-ECbPro.R1.cutadapt.fastq
+(for R1 reads)
+and cutadapt -m 35 -O 10 -a AGATCGGAAGAGCGTCGTGTAGGGAAAGAGTGTA -o 4-ECbPro.R2.cutadapt.fastq
+(for R2 reads)
+
+
+R1 reads:
+Command line parameters: -m 35 -O 10 -a AGATCGGAAGAGCACACGTCTGAACTCCAGTCAC 4-ECbPro.R1.fastq
+Maximum error rate: 10.00%
+   No. of adapters: 1
+   Processed reads:      5443843
+   Processed bases:    544384300 bp (544.4 Mbp)
+     Trimmed reads:        36085 (0.7%)
+     Trimmed bases:      1102130 bp (1.1 Mbp) (0.20% of total)
+   Too short reads:         5978 (0.1% of processed reads)
+    Too long reads:            0 (0.0% of processed reads)
+        Total time:    208.81 s
+     Time per read:      0.04 ms
+=== Adapter 1 ===
+Adapter 'AGATCGGAAGAGCACACGTCTGAACTCCAGTCAC', length 34, was trimmed 36085 times.
+No. of allowed errors:
+0-9 bp: 0; 10-19 bp: 1; 20-29 bp: 2; 30-34 bp: 3
