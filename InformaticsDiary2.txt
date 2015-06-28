@@ -216,6 +216,7 @@ Let's see how cutadapt does on the same files, using the following sequences--
 R2 primer (contaminating R1 reads)
 AGATCGGAAGAGCACACGTCTGAACTCCAGTCAC
 AGATCGGAAGAGCGGTTCAGCAGGAATGCCGAGACCGATCTCGTATGCCGTCTTCTGCTTG
+                            
 
 
 and R1 primer (contaminating R2 reads)
@@ -340,4 +341,37 @@ It isn't clear, but somehow the files got mv'd over each other in a way that era
   The batch I should run for the rest of this set is:
   qsub -o bw10.out -e bw10.err -N bw10 runbowtie.sh 10-ECcWings
   
+  
+  OK we got this all working now
+  cfisher@bbcsrv3 scratch]$ grep -c "+" *contams*
+3-ECcProe_coli.P1.contams.fastq:205
+3-ECcProe_coli.P2.contams.fastq:209
+3-ECcProe_coli.U.contams.fastq:225
+3-ECcProhg19.P1.contams.fastq:166409
+3-ECcProhg19.P2.contams.fastq:168486
+3-ECcProhg19.U.contams.fastq:62567
+
+Need to adjust just a few things to clean up after ourselves -- removing things from scratch
+
+qsub -o bw10.out -e 10-ECcWings.bowtie.log -N bw10 runbowtie.sh 10-ECcWings
+qsub -o bw18.out -e 18-ECcLegs.bowtie.log -N bw18 runbowtie.sh 18-ECcLegs
+qsub -o bw16out -e 16-ECcMeso.bowtie.log -N bw16 runbowtie.sh 16-ECcMeso
+
  
+It looks like some combination of trimmomatic and bowtie2 have gotten rid of the contaminating adapters. Running getsubstrings on R1 reads with the PCR primer2 gave absolutely 0 hits. 
+Before trimming and bowtie, there were at least 7,888 sequences with contamination, if not more. 
+WHOOOOO!
+OK so there's no need to run cutadapt and I don't really see a need to run SeqPrep either. I think we should just get all these kids together and start our 
+trinity assembly for ECc!
+I expect this to be the least complicated assembly because there were only 4 individuals used for this RNA pool. 
+
+We were losing some reads that had been trimmed and filtered and were perfectly fine. 
+
+ 
+[cfisher@bbcsrv3 QCPipeline]$ cp ../PEData/3-ECcPro_TTAGGC_L008_R1_001.fastq.gz input/3-ECcPro.R1.fastq.gz
+[cfisher@bbcsrv3 QCPipeline]$ cp ../PEData/3-ECcPro_TTAGGC_L008_R2_001.fastq.gz input/3-ECcPro.R2.fastq.gz
+
+Have to redo 3-ECcPro from beginning.
+
+The other ones -- I've updated bowtie2_func.sh so that the unpaired reads that are filtered during QualTrimPE are named with something that ends we PE, so that they don't get over
+written by qualtrimSE. 
