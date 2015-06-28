@@ -13,16 +13,14 @@ index=$2 # The index base, ie Greg_rRNA
 indexPath=$3 # The path to the index, ie ~/mini/bt2
 
 echo "Starting bowtie2 with parameters $lib, $index, $indexPath"
-un=input/scratch/$lib$index.U.filtered.fastq
-al=input/scratch/$lib$index.U.contams.fastq
+un=input/scratch/$lib$index.U.filtered_PE.fastq
+al=input/scratch/$lib$index.U.contams_PE.fastq
 unconc=input/scratch/$lib$index.P%.filtered.fastq
 alconc=input/scratch/$lib$index.P%.contams.fastq
-bowtie2 -q --phred33  -p 8 --very-sensitive  --dovetail --met-file bowtie2Metrics-$index.out --un $un --al $al --al-conc $alconc --un-conc $unconc -x $indexPath/$index -1 input/$lib.R1.fastq -2 input/$lib.R2.fastq -S deleteme$lib.paired.$index.sam 
+bowtie2 -q --phred33  -p 8 --very-sensitive  --dovetail --met-file bowtie2Metrics-$index.out --un $un --al $al --al-conc $alconc --un-conc $unconc -x $indexPath/$index -1 input/$lib.R1.fastq -2 input/$lib.R2.fastq -S /dev/null 
 
-      cp input/$lib.R1.fastq input/scratch/$lib.R1.fastq_pre$index
-      cp input/$lib.R2.fastq input/scratch/$lib.R2.fastq_pre$index
-      cp input/scratch/$lib$index.P1.filtered.fastq input/$lib.R1.fastq
-      cp input/scratch/$lib$index.P2.filtered.fastq input/$lib.R2.fastq
+      mv input/scratch/$lib$index.P1.filtered.fastq input/$lib.R1.fastq
+      mv input/scratch/$lib$index.P2.filtered.fastq input/$lib.R2.fastq
 
 # These lines will ensure that the next run through this is going to use the filtered files, and we'll keep filtering stuff out. 
 # This seems to be ready to go.. need to just uncomment it and try it out with th genomes I've got on minidrive
@@ -47,11 +45,11 @@ function filterContamsSE {
   indexPath=$3
   input=input/scratch/$lib.U.filtered.fastq
   al=input/scratch/$lib$index.U.contams.fastq
-  un=input/scratch/$lib$index.U.filtered.fastq
-# Input files need to be in the form <lib-base-name>.U1/2.filtered.fastq 
+  un=input/scratch/$lib$index.U.filtered_SE.fastq
   echo "Starting bowtie2 with parameters $lib, $index, $indexPath"
-  bowtie2 -q --phred33 -p 8 --very-sensitive --met-file bowtie2SEMetrics-$index.out --un $un --al $al -x $indexPath/$index -U $input -S deleteme$lib$index.SE.sam
-  cp $un $input 
+
+  bowtie2 -q --phred33 -p 8 --very-sensitive --met-file bowtie2SEMetrics-$index.out --un $un --al $al -x $indexPath/$index -U $input -S /dev/null 
+  mv $un $input 
 
   touch Unpairedbowtie$index.done
 }
@@ -70,6 +68,9 @@ echo "indices = $@"
 indices=$@
 echo $indices
 
+cp input/$lib.R1.fastq input/$lib.R1.fastq.bk
+cp input/$lib.R2.fastq input/$lib.R2.fastq.bk
+cp input/$lib.U.trimmed.fastq input/$lib.U.trimmed.fastq.bk
 
 for i in $indices
 
