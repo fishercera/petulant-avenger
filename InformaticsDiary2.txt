@@ -375,3 +375,15 @@ Have to redo 3-ECcPro from beginning.
 
 The other ones -- I've updated bowtie2_func.sh so that the unpaired reads that are filtered during QualTrimPE are named with something that ends we PE, so that they don't get over
 written by qualtrimSE. 
+This really generates a TON of files!!
+
+ok so trimming PE on 3-ECcPro again
+Input Read Pairs: 6519800 Both Surviving: 5900099 (90.50%) Forward Only Surviving: 399517 (6.13%) Reverse Only Surviving: 141681 (2.17%) Dropped: 78503 (1.20%)
+TrimmomaticPE: Completed successfully
+now we do the bowtie2 on it
+
+OK, this is feeling pretty good, I'm feeling the groove
+
+I think I'd like run Trinity on the Hornet cluster, though -- for some reason bsub is just a lot more user friendly for me
+Oh wait, they're doing slurm now!
+Hmm.
