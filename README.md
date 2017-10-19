@@ -39,6 +39,7 @@ analysis pipeline
 **Under construction**
 
 _Transcript quantification_ 
+
 SPECS: 
   - input: Assembly and trimmed reads
   - output: BAM file of aligned reads, counts matrix, and TPM matrix. 
